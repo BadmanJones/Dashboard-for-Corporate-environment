@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSTicket Dashboard - Enhanced</title>
+
+    <!--Montserrat Font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> 
+
+    <!--Material Icons-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
+    <!--Link to CSS-->
+    <link rel="stylesheet" href="CSS/styles.css">
+</head>
+<body>
+    <div class="grid-container">
+        <!--Header-->
+        <header class="header">
+            <div class="menu-icon" onclick="openSidebar()">
+                <span class="material-icons-outlined">menu</span>
+            </div>
+            <div class="header-left">
+                <span class="material-icons-outlined">search</span>
+            </div>
+            <div class="header-right">
+                <span class="material-icons-outlined">notifications</span>
+                <span class="material-icons-outlined">email</span>
+                <span class="material-icons-outlined">account_circle</span>
+            </div>
+        </header>
+
+        <!--Sidebar-->
+        <aside id="sidebar">
+            <div class="sidebar-title">
+                <div class="sidebar-brand">
+                    <span class="material-icons-outlined">inventory</span>
+                    OSTicket
+                </div>
+                <span class="material-icons-outlined" onclick="closeSidebar()">close</span>
+            </div>
+            <ul class="sidebar-list">
+                <li class="sidebar-list-item active" onclick="showDashboard()">
+                    <span class="material-icons-outlined">dashboard</span>
+                    Dashboard
+                </li>
+                <li class="sidebar-list-item" onclick="showChart('totalTickets')">
+                    <span class="material-icons-outlined">assignment</span>
+                    Logged Requests
+                </li>
+                <li class="sidebar-list-item" onclick="showChart('resolvedClosed')">
+                    <span class="material-icons-outlined">task</span>
+                    Resolved Tickets
+                </li>
+                <li class="sidebar-list-item" onclick="showChart('outstanding')">
+                    <span class="material-icons-outlined">pending_actions</span>
+                    Outstanding Issues
+                </li>
+                <li class="sidebar-list-item" onclick="showChart('reports')">
+                    <span class="material-icons-outlined">analytics</span>
+                    Ticket Report
+                </li>
+                <li class="sidebar-list-item">
+                    <span class="material-icons-outlined">settings</span>
+                    Settings
+                </li>
+            </ul>
+        </aside>
+
+        <!--Main Content-->
+        <main class="main-container">
+            <div class="main-title">
+                <p class="font-weight-bold">DASHBOARD</p>
+                <div class="date-filter">
+                    <select id="timeRange">
+                        <option value="week">Last Week</option>
+                        <option value="month">Last Month</option>
+                        <option value="quarter" selected>Last Quarter</option>
+                        <option value="6months">Last 6 Months</option>
+                        <option value="year">Last Year</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Key Metrics Cards -->
+            <div class="main-cards">
+                <div class="card" onclick="showChart('totalTickets')">
+                    <div class="card-inner">
+                        <p class="text-primary">Total Tickets</p>
+                        <span class="material-icons-outlined text-blue">inventory_2</span>
+                    </div>
+                    <span class="text-primary font-weight-bold card-number">1,247</span>
+                    <div class="card-percentage">+12% from last month</div>
+                </div>
+
+                <div class="card" onclick="showChart('resolvedUnClosed')">
+                    <div class="card-inner">
+                        <p class="text-primary">Resolved (Unclosed)</p>
+                        <span class="material-icons-outlined text-orange">pending_actions</span>
+                    </div>
+                    <span class="text-primary font-weight-bold card-number">156</span>
+                    <div class="card-percentage">12.5% of total</div>
+                </div>
+
+                <div class="card" onclick="showChart('resolvedClosed')">
+                    <div class="card-inner">
+                        <p class="text-primary">Resolved & Closed</p>
+                        <span class="material-icons-outlined text-green">assignment_turned_in</span>
+                    </div>
+                    <span class="text-primary font-weight-bold card-number">891</span>
+                    <div class="card-percentage">71.4% of total</div>
+                </div>
+
+                <div class="card" onclick="showChart('outstanding')">
+                    <div class="card-inner">
+                        <p class="text-primary">Outstanding Issues</p>
+                        <span class="material-icons-outlined text-red">assignment_late</span>
+                    </div>
+                    <span class="text-primary font-weight-bold card-number">200</span>
+                    <div class="card-percentage">16.1% of total</div>
+                </div>
+
+                <div class="card" onclick="showChart('avgResolution')">
+                    <div class="card-inner">
+                        <p class="text-primary">Avg Resolution Time</p>
+                        <span class="material-icons-outlined text-yellow">schedule</span>
+                    </div>
+                    <span class="text-primary font-weight-bold card-number">2.3</span>
+                    <div class="card-percentage">days average</div>
+                </div>
+            </div>
+
+            <!-- Charts and Data Section - Initially Hidden -->
+            <div id="chartSection" class="chart-section hidden">
+                <div class="section-header">
+                    <h2 id="chartSectionTitle">Chart Title</h2>
+                    <button onclick="hideChartSection()" class="close-btn">
+                        <span class="material-icons-outlined">close</span>
+                    </button>
+                </div>
+
+                <!-- Total Tickets Chart -->
+                <div id="totalTicketsChart" class="chart-view hidden">
+                    <div class="charts-grid">
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <span class="material-icons-outlined">bar_chart</span>
+                                Total Tickets - Monthly Trend
+                            </div>
+                            <div id="totalTicketsMonthly"></div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <span class="material-icons-outlined">pie_chart</span>
+                                Total Tickets - Status Breakdown
+                            </div>
+                            <div id="totalTicketsStatus"></div>
+                        </div>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Month</th><th>Created</th><th>Resolved</th><th>Pending</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>January</td><td>189</td><td>156</td><td>33</td></tr>
+                                <tr><td>February</td><td>210</td><td>185</td><td>25</td></tr>
+                                <tr><td>March</td><td>165</td><td>190</td><td>-25</td></tr>
+                                <tr><td>April</td><td>190</td><td>175</td><td>15</td></tr>
+                                <tr><td>May</td><td>145</td><td>160</td><td>-15</td></tr>
+                                <tr><td>June</td><td>220</td><td>195</td><td>25</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Resolved Unclosed Chart -->
+                <div id="resolvedUnClosedChart" class="chart-view hidden">
+                    <div class="charts-grid">
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <span class="material-icons-outlined">pending_actions</span>
+                                Resolved (Unclosed) - By Department
+                            </div>
+                            <div id="resolvedUnClosedDept"></div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <span class="material-icons-outlined">schedule</span>
+                                Resolution Time Distribution
+                            </div>
+                            <div id="resolutionTimeChart"></div>
+                        </div>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Department</th><th>Resolved (Unclosed)</th><th>Avg Days Open</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>IT Support</td><td>67</td><td>3.2</td></tr>
+                                <tr><td>Billing</td><td>34</td><td>2.8</td></tr>
+                                <tr><td>HR</td><td>28</td><td>4.1</td></tr>
+                                <tr><td>General</td><td>27</td><td>2.5</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Resolved & Closed Chart -->
+                <div id="resolvedClosedChart" class="chart-view hidden">
+                    <div class="charts-grid">
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <span class="material-icons-outlined">check_circle</span>
+                                Resolved & Closed - Weekly Progress
+                            </div>
+                            <div id="resolvedClosedWeekly"></div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <span class="material-icons-outlined">category</span>
+                                Closed Tickets by Category
+                            </div>
+                            <div id="closedByCategory"></div>
+                        </div>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Category</th><th>Closed This Month</th><th>Avg Resolution Days</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Technical Support</td><td>298</td><td>2.1</td></tr>
+                                <tr><td>Account Issues</td><td>187</td><td>1.8</td></tr>
+                                <tr><td>Billing</td><td>156</td><td>1.5</td></tr>
+                                <tr><td>General Inquiry</td><td>134</td><td>0.9</td></tr>
+                                <tr><td>Feature Request</td><td>89</td><td>7.2</td></tr>
+                                <tr><td>Bug Report</td><td>27</td><td>3.4</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Outstanding Issues Chart -->
+                <div id="outstandingChart" class="chart-view hidden">
+                    <div class="charts-grid">
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <span class="material-icons-outlined">error_outline</span>
+                                Outstanding Issues - By Priority
+                            </div>
+                            <div id="outstandingByPriority"></div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <span class="material-icons-outlined">access_time</span>
+                                Outstanding Issues - Age Distribution
+                            </div>
+                            <div id="outstandingByAge"></div>
+                        </div>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Priority</th><th>Count</th><th>Avg Days Open</th><th>Oldest (Days)</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="priority-emergency">Emergency</td><td>8</td><td>0.5</td><td>2</td></tr>
+                                <tr><td class="priority-high">High</td><td>32</td><td>2.1</td><td>7</td></tr>
+                                <tr><td class="priority-medium">Normal</td><td>89</td><td>4.3</td><td>15</td></tr>
+                                <tr><td class="priority-low">Low</td><td>71</td><td>8.7</td><td>45</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Average Resolution Chart -->
+                <div id="avgResolutionChart" class="chart-view hidden">
+                    <div class="charts-grid">
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <span class="material-icons-outlined">trending_down</span>
+                                Resolution Time Trends
+                            </div>
+                            <div id="resolutionTrends"></div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <span class="material-icons-outlined">compare_arrows</span>
+                                Resolution Time by Priority
+                            </div>
+                            <div id="resolutionByPriority"></div>
+                        </div>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Priority Level</th><th>Avg Resolution (Days)</th><th>Target SLA (Days)</th><th>SLA Met</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="priority-emergency">Emergency</td><td>0.3</td><td>0.5</td><td class="text-green">✓ 95%</td></tr>
+                                <tr><td class="priority-high">High</td><td>1.2</td><td>1.0</td><td class="text-orange">⚠ 78%</td></tr>
+                                <tr><td class="priority-medium">Normal</td><td>2.8</td><td>3.0</td><td class="text-green">✓ 89%</td></tr>
+                                <tr><td class="priority-low">Low</td><td>5.1</td><td>7.0</td><td class="text-green">✓ 92%</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Reports Chart -->
+                <div id="reportsChart" class="chart-view hidden">
+                    <div class="charts-grid">
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <span class="material-icons-outlined">analytics</span>
+                                Quarterly Performance
+                            </div>
+                            <div id="quarterlyPerformance"></div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-title">
+                                <span class="material-icons-outlined">pie_chart</span>
+                                Agent Performance
+                            </div>
+                            <div id="agentPerformance"></div>
+                        </div>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Agent</th><th>Tickets Resolved</th><th>Avg Resolution Time</th><th>Customer Rating</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>John Smith</td><td>234</td><td>2.1 days</td><td>4.8/5</td></tr>
+                                <tr><td>Sarah Johnson</td><td>198</td><td>1.9 days</td><td>4.9/5</td></tr>
+                                <tr><td>Mike Wilson</td><td>189</td><td>2.3 days</td><td>4.7/5</td></tr>
+                                <tr><td>Lisa Brown</td><td>167</td><td>2.0 days</td><td>4.8/5</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.44.0/apexcharts.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
